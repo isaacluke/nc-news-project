@@ -2,7 +2,7 @@ const express = require("express")
 
 const endpoints = require('./endpoints.json')
 const { getAllTopics } = require("./controllers/topics.controllers")
-const { getArticle, getAllArticles } = require("./controllers/articles.controllers")
+const { getArticle, getAllArticles, getArticleComments } = require("./controllers/articles.controllers")
 
 const app = express()
 
@@ -12,6 +12,7 @@ app.get("/api", (req,res,next)=>{
 })
 app.get("/api/articles/:article_id", getArticle)
 app.get('/api/articles', getAllArticles)
+app.get('/api/articles/:article_id/comments', getArticleComments)
 
 app.all("/*", (req,res,next)=>{
     res.status(404).send({msg: "Path not found"})
