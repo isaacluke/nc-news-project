@@ -30,6 +30,14 @@ The test suite uses the following dependencies:
     - The testing in this repo is done using the jest framework. Install with the command:
 
         ```npm install --save-dev jest```
+    - The testing in this repo also uses **Jest Sorted**, which extends jest.expect. Install with the command:
+
+        ```npm install --save-dev jest-sorted```
+
+        As well as adding the following to your `package.json` at the root level:
+        - If **Jest>v24**, then: ```"jest": {"setupFilesAfterEnv": ["jest-sorted"]}```
+        - If **Jest<v23**, then: ```"jest": {"setupTestFrameworkScriptFile":"jest-sorted"}``` 
+
 2. **supertest**
     - The high-level abstraction for testing is done using supertest. Install with the command:
     
