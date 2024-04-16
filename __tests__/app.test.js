@@ -70,44 +70,136 @@ describe("/api/articles", () => {
 });
 
 describe("/api/articles/:article_id", () => {
-  test("GET 200: Responds with an object with the articles properties", () => {
-    return request(app)
-      .get("/api/articles/6")
-      .expect(200)
-      .then(({ body }) => {
-        const { article } = body;
-        const testArticle = {
-          article_id: 6,
-          title: "A",
-          topic: "mitch",
-          author: "icellusedkars",
-          body: "Delicious tin of cat food",
-          created_at: "2020-10-18T01:00:00.000Z",
-          votes: 0,
-          article_img_url:
-            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        };
-        expect(article).toMatchObject(testArticle);
-      });
+  describe("GET", () => {
+    test("GET 200: Responds with an object with the articles properties", () => {
+      return request(app)
+        .get("/api/articles/6")
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          const testArticle = {
+            article_id: 6,
+            title: "A",
+            topic: "mitch",
+            author: "icellusedkars",
+            body: "Delicious tin of cat food",
+            created_at: "2020-10-18T01:00:00.000Z",
+            votes: 0,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toMatchObject(testArticle);
+        });
+    });
+    test("GET 400: Invalid article_id type received", () => {
+      return request(app)
+        .get("/api/articles/invalid-input")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("GET 404: article_id not found", () => {
+      return request(app)
+        .get("/api/articles/10000")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not found");
+        });
+    });
   });
-  test("GET 400: Invalid article_id type received", () => {
-    return request(app)
-      .get("/api/articles/invalid-input")
-      .expect(400)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe("Bad request");
-      });
-  });
-  test("GET 404: article_id not found", () => {
-    return request(app)
-      .get("/api/articles/10000")
-      .expect(404)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe("Not found");
-      });
-  });
+  describe("PATCH",()=>{
+    test("PATCH 200: Accepts a increment of votes and responds with the updated article",()=>{
+        const testPatch = { inc_votes: 20}
+        return request(app)
+        .patch("/api/articles/1")
+        .send(testPatch)
+        .expect(200)
+        .then(({body})=>{
+            const {article} = body
+            const testArticle = {
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes: 120,
+                article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              };
+              expect(article).toMatchObject(testArticle);
+        })
+    })
+    test("PATCH 200: Accepts a negative number and decrements the articles vote property",()=>{
+        const testPatch = { inc_votes: -20}
+        return request(app)
+        .patch("/api/articles/1")
+        .send(testPatch)
+        .expect(200)
+        .then(({body})=>{
+            const {article} = body
+            const testArticle = {
+                article_id: 1,
+                title: "Living in the shadow of a great man",
+                topic: "mitch",
+                author: "butter_bridge",
+                body: "I find this existence challenging",
+                created_at: "2020-07-09T20:11:00.000Z",
+                votes: 80,
+                article_img_url:
+                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              };
+              expect(article).toMatchObject(testArticle);
+        })
+    })
+    test("PATCH 400: Invalid article_id type received",()=>{
+        const testPatch = { inc_votes: 20}
+        return request(app)
+        .patch("/api/articles/invalid-type")
+        .send(testPatch)
+        .expect(400)
+        .then(({body})=>{
+            const {msg} = body
+            expect(msg).toBe("Bad request")
+        })
+    })
+    test("PATCH 404: article_id not found",()=>{
+        const testPatch = { inc_votes: 20}
+        return request(app)
+        .patch("/api/articles/999")
+        .send(testPatch)
+        .expect(404)
+        .then(({body})=>{
+            const {msg} = body
+            expect(msg).toBe("Not found")
+        })
+    })
+    test("PATCH 400: invalid request body",()=>{
+        const testPatch = { inc_votes: "invalid type"}
+        return request(app)
+        .patch("/api/articles/1")
+        .send(testPatch)
+        .expect(400)
+        .then(({body})=>{
+            const {msg} = body
+            expect(msg).toBe("Bad request")
+        })
+    })
+    test("PATCH 400: request body of incorrect type",()=>{
+        const testPatch = { invalid: 20}
+        return request(app)
+        .patch("/api/articles/1")
+        .send(testPatch)
+        .expect(400)
+        .then(({body})=>{
+            const {msg} = body
+            expect(msg).toBe("Bad request")
+        })
+    })
+  })
 });
 
 describe("/api/articles/:article_id/comments", () => {

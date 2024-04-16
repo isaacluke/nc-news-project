@@ -7,6 +7,7 @@ const {
   getAllArticles,
   getArticleComments,
   postArticleComment,
+  patchArticleVotes,
 } = require("./controllers/articles.controllers");
 const {
   handleCustomErrors,
@@ -25,6 +26,8 @@ app.get("/api", (req, res, next) => {
 app.get("/api/articles/:article_id", getArticle);
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
+
+app.patch("/api/articles/:article_id", patchArticleVotes)
 
 app.post("/api/articles/:article_id/comments", postArticleComment);
 
