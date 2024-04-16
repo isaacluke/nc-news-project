@@ -158,6 +158,15 @@ describe("/api/articles/:article_id", () => {
           expect(msg).toBe("Not found");
         });
     });
+    test("GET 200: Responds with an article object that now also includes comment_count", ()=>{
+        return request(app)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body;
+          expect(article.comment_count).toBe(11);
+        });
+    })
   });
   describe("PATCH", () => {
     test("PATCH 200: Accepts a increment of votes and responds with the updated article", () => {
