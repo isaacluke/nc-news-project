@@ -110,96 +110,96 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
-  describe("PATCH",()=>{
-    test("PATCH 200: Accepts a increment of votes and responds with the updated article",()=>{
-        const testPatch = { inc_votes: 20}
-        return request(app)
+  describe("PATCH", () => {
+    test("PATCH 200: Accepts a increment of votes and responds with the updated article", () => {
+      const testPatch = { inc_votes: 20 };
+      return request(app)
         .patch("/api/articles/1")
         .send(testPatch)
         .expect(200)
-        .then(({body})=>{
-            const {article} = body
-            const testArticle = {
-                article_id: 1,
-                title: "Living in the shadow of a great man",
-                topic: "mitch",
-                author: "butter_bridge",
-                body: "I find this existence challenging",
-                created_at: "2020-07-09T20:11:00.000Z",
-                votes: 120,
-                article_img_url:
-                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              };
-              expect(article).toMatchObject(testArticle);
-        })
-    })
-    test("PATCH 200: Accepts a negative number and decrements the articles vote property",()=>{
-        const testPatch = { inc_votes: -20}
-        return request(app)
+        .then(({ body }) => {
+          const { article } = body;
+          const testArticle = {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 120,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toMatchObject(testArticle);
+        });
+    });
+    test("PATCH 200: Accepts a negative number and decrements the articles vote property", () => {
+      const testPatch = { inc_votes: -20 };
+      return request(app)
         .patch("/api/articles/1")
         .send(testPatch)
         .expect(200)
-        .then(({body})=>{
-            const {article} = body
-            const testArticle = {
-                article_id: 1,
-                title: "Living in the shadow of a great man",
-                topic: "mitch",
-                author: "butter_bridge",
-                body: "I find this existence challenging",
-                created_at: "2020-07-09T20:11:00.000Z",
-                votes: 80,
-                article_img_url:
-                "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              };
-              expect(article).toMatchObject(testArticle);
-        })
-    })
-    test("PATCH 400: Invalid article_id type received",()=>{
-        const testPatch = { inc_votes: 20}
-        return request(app)
+        .then(({ body }) => {
+          const { article } = body;
+          const testArticle = {
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 80,
+            article_img_url:
+              "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          };
+          expect(article).toMatchObject(testArticle);
+        });
+    });
+    test("PATCH 400: Invalid article_id type received", () => {
+      const testPatch = { inc_votes: 20 };
+      return request(app)
         .patch("/api/articles/invalid-type")
         .send(testPatch)
         .expect(400)
-        .then(({body})=>{
-            const {msg} = body
-            expect(msg).toBe("Bad request")
-        })
-    })
-    test("PATCH 404: article_id not found",()=>{
-        const testPatch = { inc_votes: 20}
-        return request(app)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("PATCH 404: article_id not found", () => {
+      const testPatch = { inc_votes: 20 };
+      return request(app)
         .patch("/api/articles/999")
         .send(testPatch)
         .expect(404)
-        .then(({body})=>{
-            const {msg} = body
-            expect(msg).toBe("Not found")
-        })
-    })
-    test("PATCH 400: invalid request body",()=>{
-        const testPatch = { inc_votes: "invalid type"}
-        return request(app)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not found");
+        });
+    });
+    test("PATCH 400: invalid request body", () => {
+      const testPatch = { inc_votes: "invalid type" };
+      return request(app)
         .patch("/api/articles/1")
         .send(testPatch)
         .expect(400)
-        .then(({body})=>{
-            const {msg} = body
-            expect(msg).toBe("Bad request")
-        })
-    })
-    test("PATCH 400: request body of incorrect type",()=>{
-        const testPatch = { invalid: 20}
-        return request(app)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("PATCH 400: request body of incorrect type", () => {
+      const testPatch = { invalid: 20 };
+      return request(app)
         .patch("/api/articles/1")
         .send(testPatch)
         .expect(400)
-        .then(({body})=>{
-            const {msg} = body
-            expect(msg).toBe("Bad request")
-        })
-    })
-  })
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
@@ -224,14 +224,14 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
     test("GET 200: Responds with an empty array when an article has no comments", () => {
-        return request(app)
-          .get("/api/articles/2/comments")
-          .expect(200)
-          .then(({ body }) => {
-            const { comments } = body;
-            expect(comments).toHaveLength(0);
-          });
-      });
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments).toHaveLength(0);
+        });
+    });
     test("GET 200: Comments should be served by order of most recent to oldest", () => {
       return request(app)
         .get("/api/articles/1/comments")
@@ -342,33 +342,50 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
-describe("/api/comments/:comment_id",()=>{
-    describe("DELETE",()=>{
-        test("DELETE 204: Deletes specified comment and responds with 204 and no content",()=>{
-            return request(app)
-            .delete("/api/comments/3")
-            .expect(204)
-        })
-        test("DELETE 400: Invalid comment_id type",()=>{
-            return request(app)
-            .delete("/api/comments/invalid-type")
-            .expect(400)
-            .then(({body})=>{
-                const {msg} = body
-                expect(msg).toBe("Bad request")
-            })
-        })
-        test("DELETE 404: comment_id not found",()=>{
-            return request(app)
-            .delete("/api/comments/9999")
-            .expect(404)
-            .then(({body})=>{
-                const {msg} = body
-                expect(msg).toBe("Not found")
-            })
-        })
-    })
-})
+describe("/api/comments/:comment_id", () => {
+  describe("DELETE", () => {
+    test("DELETE 204: Deletes specified comment and responds with 204 and no content", () => {
+      return request(app).delete("/api/comments/3").expect(204);
+    });
+    test("DELETE 400: Invalid comment_id type", () => {
+      return request(app)
+        .delete("/api/comments/invalid-type")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("DELETE 404: comment_id not found", () => {
+      return request(app)
+        .delete("/api/comments/9999")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not found");
+        });
+    });
+  });
+});
+
+describe("/api/users", () => {
+  test("GET 200: Responds with an array of all users", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String)
+          });
+        });
+      });
+  });
+});
 
 describe("/*", () => {
   test("ALL 404: Responds with a path not found when an incorrect path is invalid", () => {
