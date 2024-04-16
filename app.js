@@ -1,40 +1,39 @@
-const express = require("express")
+const express = require("express");
 
-const endpoints = require('./endpoints.json')
-const { getAllTopics } = require("./controllers/topics.controllers")
-const { getArticle, getAllArticles, getArticleComments } = require("./controllers/articles.controllers")
+const endpoints = require("./endpoints.json");
+const { getAllTopics } = require("./controllers/topics.controllers");
+const {
+  getArticle,
+  getAllArticles,
+  getArticleComments,
+  postArticleComment,
+} = require("./controllers/articles.controllers");
+const {
+  handleCustomErrors,
+  handlePsqlErrors,
+  handleServerErrors,
+  handlePathErrors,
+} = require("./errors");
 
-const app = express()
+const app = express();
+app.use(express.json());
 
-app.get("/api/topics", getAllTopics)
-app.get("/api", (req,res,next)=>{
-    res.status(200).send({endpoints})
-})
-app.get("/api/articles/:article_id", getArticle)
-app.get('/api/articles', getAllArticles)
-app.get('/api/articles/:article_id/comments', getArticleComments)
+app.get("/api/topics", getAllTopics);
+app.get("/api", (req, res, next) => {
+  res.status(200).send({ endpoints });
+});
+app.get("/api/articles/:article_id", getArticle);
+app.get("/api/articles", getAllArticles);
+app.get("/api/articles/:article_id/comments", getArticleComments);
 
-app.all("/*", (req,res,next)=>{
-    res.status(404).send({msg: "Path not found"})
-})
+app.post("/api/articles/:article_id/comments", postArticleComment);
 
+app.all("/*", handlePathErrors);
 
-app.use((err,req,res,next)=>{
-    if (err.code === '22P02'){
-        res.status(400).send({msg: "Bad request"})
-    }
-    next(err)
-})
+app.use(handlePsqlErrors);
 
-app.use((err,req,res,next)=>{
-    if (err.status && err.msg){
-        res.status(err.status).send({msg: err.msg})
-    }
-    next(err)
-})
+app.use(handleCustomErrors);
 
-app.use((err,req,res,next)=>{
-    res.status(500).send({msg: "Internal server error"})
-})
+app.use(handleServerErrors);
 
-module.exports = app
+module.exports = app;

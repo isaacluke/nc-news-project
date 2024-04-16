@@ -111,51 +111,133 @@ describe("/api/articles/:article_id", () => {
 });
 
 describe("/api/articles/:article_id/comments", () => {
-  test("GET 200: Responds with an array of comments for the given article with the appropriate properties", () => {
-    return request(app)
-      .get("/api/articles/1/comments")
-      .expect(200)
-      .then(({ body }) => {
-        const { comments } = body;
-        expect(comments.length).toBe(11);
-        comments.forEach((comment) => {
-          expect(comment).toMatchObject({
-            comment_id: expect.any(Number),
-            votes: expect.any(Number),
-            created_at: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
-            article_id: expect.any(Number),
+  describe("GET", () => {
+    test("GET 200: Responds with an array of comments for the given article with the appropriate properties", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments.length).toBe(11);
+          comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+            });
           });
         });
-      });
+    });
+    test("GET 200: Comments should be served by order of most recent to oldest", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("GET 400: Invalid article_id type received", () => {
+      return request(app)
+        .get("/api/articles/invalid-input/comments")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("GET 404: article_id comments not found", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not found");
+        });
+    });
   });
-  test("GET 200: Comments should be served by order of most recent to oldest",()=>{
-    return request(app)
-    .get("/api/articles/1/comments")
-    .expect(200)
-    .then(({body})=>{
-        const {comments} = body
-        expect(comments).toBeSortedBy("created_at", { descending: true })
-    })
-  })
-  test("GET 400: Invalid article_id type received", () => {
-    return request(app)
-      .get("/api/articles/invalid-input/comments")
-      .expect(400)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe("Bad request");
-      });
-  });
-  test("GET 404: article_id comments not found", () => {
-    return request(app)
-      .get("/api/articles/2/comments")
-      .expect(404)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe("Not found");
-      });
+  describe("POST", () => {
+    test("POST 201: Accepts an object with a username and body, and responds with a posted comment", () => {
+      const testComment = {
+        username: "butter_bridge",
+        body: "This is a test comment",
+      };
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(testComment)
+        .expect(201)
+        .then(({ body }) => {
+          const { comment } = body;
+          const expectedComment = {
+            comment_id: 19,
+            body: "This is a test comment",
+            votes: 0,
+            author: "butter_bridge",
+            article_id: 2,
+            created_at: expect.any(String),
+          };
+          expect(comment).toMatchObject(expectedComment);
+        });
+    });
+    test("POST 400: Invalid article_id type received", () => {
+      const testComment = {
+        username: "butter_bridge",
+        body: "This is a test comment",
+      };
+      return request(app)
+        .post("/api/articles/invalid-input/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("POST 404: article_id not found", () => {
+      const testComment = {
+        username: "butter_bridge",
+        body: "This is a test comment",
+      };
+      return request(app)
+        .post("/api/articles/100/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not found");
+        });
+    });
+    test("POST 400: Invalid comment request received", () => {
+      const testComment = {
+        invalid: "butter_bridge",
+        body: "This is a test comment",
+      };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("POST 404: username not found", () => {
+      const testComment = {
+        username: "invalid",
+        body: "This is a test comment",
+      };
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send(testComment)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not found");
+        });
+    });
   });
 });
 
