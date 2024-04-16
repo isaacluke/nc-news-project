@@ -67,6 +67,55 @@ describe("/api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+  test("GET 200: Endpoint accepts a topic query, which responds with all articles with the specified topic value", ()=>{
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: 'mitch',
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  })
+  test("GET 200: Responds with an empty array when a valid topic has no articles",()=>{
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(0);
+      });
+  })
+  test("GET 404: topic not found",()=>{
+    return request(app)
+    .get("/api/articles?topic=invalid")
+    .expect(404)
+    .then(({body})=>{
+        const {msg} = body
+        expect(msg).toBe("Not found")
+    })
+  })
+  test("GET 400: invalid query",()=>{
+    return request(app)
+    .get("/api/articles?invalid=mitch")
+    .expect(400)
+    .then(({body})=>{
+        const {msg} = body
+        expect(msg).toBe("Bad request")
+    })
+  })
 });
 
 describe("/api/articles/:article_id", () => {
