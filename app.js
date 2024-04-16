@@ -15,6 +15,7 @@ const {
   handleServerErrors,
   handlePathErrors,
 } = require("./errors");
+const { deleteComment } = require("./controllers/comments.controllers");
 
 const app = express();
 app.use(express.json());
@@ -26,10 +27,9 @@ app.get("/api", (req, res, next) => {
 app.get("/api/articles/:article_id", getArticle);
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
-
 app.patch("/api/articles/:article_id", patchArticleVotes)
-
 app.post("/api/articles/:article_id/comments", postArticleComment);
+app.delete("/api/comments/:comment_id", deleteComment)
 
 app.all("/*", handlePathErrors);
 

@@ -342,6 +342,34 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
+describe("/api/comments/:comment_id",()=>{
+    describe("DELETE",()=>{
+        test("DELETE 204: Deletes specified comment and responds with 204 and no content",()=>{
+            return request(app)
+            .delete("/api/comments/3")
+            .expect(204)
+        })
+        test("DELETE 400: Invalid comment_id type",()=>{
+            return request(app)
+            .delete("/api/comments/invalid-type")
+            .expect(400)
+            .then(({body})=>{
+                const {msg} = body
+                expect(msg).toBe("Bad request")
+            })
+        })
+        test("DELETE 404: comment_id not found",()=>{
+            return request(app)
+            .delete("/api/comments/9999")
+            .expect(404)
+            .then(({body})=>{
+                const {msg} = body
+                expect(msg).toBe("Not found")
+            })
+        })
+    })
+})
+
 describe("/*", () => {
   test("ALL 404: Responds with a path not found when an incorrect path is invalid", () => {
     return request(app)
