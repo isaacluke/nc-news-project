@@ -6,6 +6,7 @@ const {
   updateArticleVotes,
   checkArticleExists,
 } = require("../models/articles.models");
+const { checkTopicExists } = require("../models/topics.models");
 
 exports.getArticle = (req, res, next) => {
   const { article_id } = req.params;
@@ -19,9 +20,19 @@ exports.getArticle = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  selectAllArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+  const { topic } = req.query;
+  const validQueries = ["topic"];
+  const requestQueries = Object.keys(req.query);
+  if (!requestQueries.every((query) => validQueries.includes(query))) {
+    res.status(400).send({ msg: "Bad request" });
+  }
+  Promise.all([selectAllArticles(topic), checkTopicExists(topic)])
+    .then(([articles]) => {
+      res.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getArticleComments = (req, res, next) => {
