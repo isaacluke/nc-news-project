@@ -218,11 +218,20 @@ describe("/api/articles/:article_id/comments", () => {
               created_at: expect.any(String),
               author: expect.any(String),
               body: expect.any(String),
-              article_id: expect.any(Number),
+              article_id: 1,
             });
           });
         });
     });
+    test("GET 200: Responds with an empty array when an article has no comments", () => {
+        return request(app)
+          .get("/api/articles/2/comments")
+          .expect(200)
+          .then(({ body }) => {
+            const { comments } = body;
+            expect(comments).toHaveLength(0);
+          });
+      });
     test("GET 200: Comments should be served by order of most recent to oldest", () => {
       return request(app)
         .get("/api/articles/1/comments")
@@ -241,9 +250,9 @@ describe("/api/articles/:article_id/comments", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("GET 404: article_id comments not found", () => {
+    test("GET 404: article_id not found", () => {
       return request(app)
-        .get("/api/articles/2/comments")
+        .get("/api/articles/999/comments")
         .expect(404)
         .then(({ body }) => {
           const { msg } = body;
@@ -288,7 +297,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("POST 404: article_id not found", () => {
+    test("POST 404: article not found", () => {
       const testComment = {
         username: "butter_bridge",
         body: "This is a test comment",
