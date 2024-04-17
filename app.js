@@ -1,6 +1,5 @@
 const express = require("express");
 
-const endpoints = require("./endpoints.json");
 const { getAllTopics } = require("./controllers/topics.controllers");
 const {
   getArticle,
@@ -17,14 +16,13 @@ const {
 } = require("./errors");
 const { deleteComment } = require("./controllers/comments.controllers");
 const { getAllUsers } = require("./controllers/users.controllers");
+const { getEndpoints } = require("./controllers/api.controllers");
 
 const app = express();
 app.use(express.json());
 
 app.get("/api/topics", getAllTopics);
-app.get("/api", (req, res, next) => {
-  res.status(200).send({ endpoints });
-});
+app.get("/api", getEndpoints);
 app.get("/api/articles/:article_id", getArticle);
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
