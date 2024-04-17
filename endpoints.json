@@ -31,7 +31,24 @@
     "description": "serves an array of all users",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "username": "butter_bridge", "name": "jonny", "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg" }]
+      "topics": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "serves an object that contains the specified user",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      }
     }
   },
   "GET /api/articles/:article_id": {
@@ -55,51 +72,57 @@
     "description": "serves an array of all comments on a specified article",
     "queries": [],
     "exampleResponse": {
-      "comments": [{
-        "comment_id": 3,
-        "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
-        "article_id": 1,
-        "author": "icellusedkars",
-        "votes": 100,
-        "created_at": "2020-03-01T01:13:00.000Z"
-      }]
+      "comments": [
+        {
+          "comment_id": 3,
+          "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+          "article_id": 1,
+          "author": "icellusedkars",
+          "votes": 100,
+          "created_at": "2020-03-01T01:13:00.000Z"
+        }
+      ]
     }
   },
   "POST /api/articles/:article_id/comments": {
     "description": "Accepts a comment object with a username and body, and serves the posted comment. The user must exist.",
     "queries": [],
-    "exampleRequest":{
+    "exampleRequest": {
       "username": "butter_bridge",
       "body": "This is an example comment"
     },
     "exampleResponse": {
-      "comment": [{
-        "comment_id": 3,
-        "body": "This is an example comment",
-        "author": "butter_bridge",
-        "article_id": 1,
-        "votes": 0,
-        "created_at": "2020-03-01T01:13:00.000Z"
-      }]
+      "comment": [
+        {
+          "comment_id": 3,
+          "body": "This is an example comment",
+          "author": "butter_bridge",
+          "article_id": 1,
+          "votes": 0,
+          "created_at": "2020-03-01T01:13:00.000Z"
+        }
+      ]
     }
   },
   "PATCH /api/articles/:article_id": {
     "description": "Accepts a votes increment object, and serves the article with the updated votes.",
     "queries": [],
-    "exampleRequest":{
+    "exampleRequest": {
       "inc_votes": 20
     },
     "exampleResponse": {
-      "article": [{
-        "article_id": 1,
-        "title": "Living in the shadow of a great man",
-        "topic": "mitch",
-        "author": "butter_bridge",
-        "body": "I find this existence challenging",
-        "created_at": "2020-07-09T20:11:00.000Z",
-        "votes": 120,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-      }]
+      "article": [
+        {
+          "article_id": 1,
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "body": "I find this existence challenging",
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "votes": 120,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ]
     }
   },
   "DELETE /api/comments/:comment_id": {
