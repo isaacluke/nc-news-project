@@ -20,13 +20,13 @@ exports.getArticle = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { topic } = req.query;
-  const validQueries = ["topic"];
+  const { topic , sort_by , order } = req.query;
+  const validQueries = ["topic", "sort_by", "order"];
   const requestQueries = Object.keys(req.query);
   if (!requestQueries.every((query) => validQueries.includes(query))) {
     res.status(400).send({ msg: "Bad request" });
   }
-  Promise.all([selectAllArticles(topic), checkTopicExists(topic)])
+  Promise.all([selectAllArticles(topic, sort_by, order), checkTopicExists(topic)])
     .then(([articles]) => {
       res.status(200).send({ articles });
     })

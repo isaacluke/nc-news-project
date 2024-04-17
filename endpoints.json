@@ -10,8 +10,8 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles. Accepts topic query, which serves an array of all articles with the specified topic",
-    "queries": ["topic"],
+    "description": "serves an array of all articles. Accepts topic query, which serves an array of all articles with the specified topic. Accepts sort_by query, which serves an array of all articles sorted by specified column. Accepts order query, which serves an array of all articles ordered my specified asc or desc.",
+    "queries": ["topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {

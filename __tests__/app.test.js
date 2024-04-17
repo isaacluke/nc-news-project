@@ -67,7 +67,7 @@ describe("/api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
-  test("GET 200: Endpoint accepts a topic query, which responds with all articles with the specified topic value", ()=>{
+  test("GET 200: Endpoint accepts a topic query, which responds with all articles with the specified topic value", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
       .expect(200)
@@ -78,7 +78,7 @@ describe("/api/articles", () => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
             title: expect.any(String),
-            topic: 'mitch',
+            topic: "mitch",
             author: expect.any(String),
             created_at: expect.any(String),
             votes: expect.any(Number),
@@ -88,8 +88,8 @@ describe("/api/articles", () => {
           expect(article).not.toHaveProperty("body");
         });
       });
-  })
-  test("GET 200: Responds with an empty array when a valid topic has no articles",()=>{
+  });
+  test("GET 200: Responds with an empty array when a valid topic has no articles", () => {
     return request(app)
       .get("/api/articles?topic=paper")
       .expect(200)
@@ -97,26 +97,70 @@ describe("/api/articles", () => {
         const { articles } = body;
         expect(articles).toHaveLength(0);
       });
-  })
-  test("GET 404: topic not found",()=>{
+  });
+  test("GET 404: topic not found", () => {
     return request(app)
-    .get("/api/articles?topic=invalid")
-    .expect(404)
-    .then(({body})=>{
-        const {msg} = body
-        expect(msg).toBe("Not found")
-    })
-  })
-  test("GET 400: invalid query",()=>{
+      .get("/api/articles?topic=invalid")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Not found");
+      });
+  });
+  test("GET 400: invalid query", () => {
     return request(app)
-    .get("/api/articles?invalid=mitch")
-    .expect(400)
-    .then(({body})=>{
-        const {msg} = body
-        expect(msg).toBe("Bad request")
-    })
-  })
-  
+      .get("/api/articles?invalid=mitch")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("GET 200: Endpoint accepts a sort_by query, which responds with the articles sorted by specified column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("comment_count", { descending: true });
+      });
+  });
+  test("GET 400: invalid sort_by column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("GET 200: Endpoint accepts a order query, which responds with the articles ordered by specified asc or desc", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("title");
+      });
+  });
+  test("GET 200: order defaults to descending", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("GET 400: invalid order request", () => {
+    return request(app)
+      .get("/api/articles?order=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
@@ -159,15 +203,15 @@ describe("/api/articles/:article_id", () => {
           expect(msg).toBe("Not found");
         });
     });
-    test("GET 200: Responds with an article object that now also includes comment_count", ()=>{
-        return request(app)
+    test("GET 200: Responds with an article object that now also includes comment_count", () => {
+      return request(app)
         .get("/api/articles/1")
         .expect(200)
         .then(({ body }) => {
           const { article } = body;
           expect(article.comment_count).toBe(11);
         });
-    })
+    });
   });
   describe("PATCH", () => {
     test("PATCH 200: Accepts a increment of votes and responds with the updated article", () => {
@@ -439,7 +483,7 @@ describe("/api/users", () => {
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
-            avatar_url: expect.any(String)
+            avatar_url: expect.any(String),
           });
         });
       });
