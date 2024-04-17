@@ -136,20 +136,20 @@ describe("/api/articles", () => {
   });
   test("GET 200: Endpoint accepts a order query, which responds with the articles ordered by specified asc or desc", () => {
     return request(app)
-      .get("/api/articles?order=asc")
+      .get("/api/articles?sort_by=title&&order=asc")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toBeSortedBy("created_at");
+        expect(articles).toBeSortedBy("title");
       });
   });
   test("GET 200: order defaults to descending", () => {
     return request(app)
-      .get("/api/articles?sort_by=article_id")
+      .get("/api/articles?sort_by=title")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toBeSortedBy("article_id", { descending: true });
+        expect(articles).toBeSortedBy("title", { descending: true });
       });
   });
   test("GET 400: invalid order request", () => {
