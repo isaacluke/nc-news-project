@@ -305,7 +305,7 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-describe("/api/articles/:article_id/comments", () => {
+describe.only("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
     test("GET 200: Responds with an array of comments for the given article with the appropriate properties", () => {
       return request(app)
@@ -470,7 +470,7 @@ describe("/api/comments/:comment_id", () => {
     });
   });
   describe("PATCH", ()=>{
-    test.only("PATCH 200: Accepts a increment of votes and responds with the updated comment", () => {
+    test("PATCH 200: Accepts a increment of votes and responds with the updated comment", () => {
         const testPatch = { inc_votes: 3 };
         return request(app)
           .patch("/api/comments/1")
