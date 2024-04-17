@@ -66,7 +66,7 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "Accepts a comment object with a username and body, and serves the posted comment.",
+    "description": "Accepts a comment object with a username and body, and serves the posted comment. The user must exist.",
     "queries": [],
     "exampleRequest":{
       "username": "butter_bridge",
