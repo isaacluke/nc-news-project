@@ -469,6 +469,26 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
+  describe("PATCH", ()=>{
+    test.only("PATCH 200: Accepts a increment of votes and responds with the updated comment", () => {
+        const testPatch = { inc_votes: 3 };
+        return request(app)
+          .patch("/api/comments/1")
+          .send(testPatch)
+          .expect(200)
+          .then(({ body }) => {
+            const { comment } = body;
+            const testComment =   {
+                body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                votes: 19,
+                author: "butter_bridge",
+                article_id: 9,
+                created_at: 1586179020000,
+              };
+            expect(article).toMatchObject(testComment);
+          });
+      });
+  })
 });
 
 describe("/api/users", () => {
