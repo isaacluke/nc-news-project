@@ -305,7 +305,7 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-describe.only("/api/articles/:article_id/comments", () => {
+describe("/api/articles/:article_id/comments", () => {
   describe("GET", () => {
     test("GET 200: Responds with an array of comments for the given article with the appropriate properties", () => {
       return request(app)
@@ -469,26 +469,88 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
-  describe("PATCH", ()=>{
+  describe("PATCH", () => {
     test("PATCH 200: Accepts a increment of votes and responds with the updated comment", () => {
-        const testPatch = { inc_votes: 3 };
-        return request(app)
-          .patch("/api/comments/1")
-          .send(testPatch)
-          .expect(200)
-          .then(({ body }) => {
-            const { comment } = body;
-            const testComment =   {
-                body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-                votes: 19,
-                author: "butter_bridge",
-                article_id: 9,
-                created_at: 1586179020000,
-              };
-            expect(article).toMatchObject(testComment);
-          });
-      });
-  })
+      const testPatch = { inc_votes: 3 };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(testPatch)
+        .expect(200)
+        .then(({ body }) => {
+          const { comment } = body;
+          const testComment = {
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            votes: 19,
+            author: "butter_bridge",
+            article_id: 9,
+            created_at: "2020-04-06T12:17:00.000Z",
+          };
+          expect(comment).toMatchObject(testComment);
+        });
+    });
+    test("PATCH 200: Accepts a negative number and decrements the comment's vote property", () => {
+        const testPatch = { inc_votes: -10 };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(testPatch)
+        .expect(200)
+        .then(({ body }) => {
+          const { comment } = body;
+          const testComment = {
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            votes: 6,
+            author: "butter_bridge",
+            article_id: 9,
+            created_at: "2020-04-06T12:17:00.000Z",
+          };
+          expect(comment).toMatchObject(testComment);
+        });
+    });
+    test("PATCH 400: Invalid comment_id type received", () => {
+      const testPatch = { inc_votes: 3 };
+      return request(app)
+        .patch("/api/comments/invalid-type")
+        .send(testPatch)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("PATCH 404: comment_id not found", () => {
+      const testPatch = { inc_votes: 3 };
+      return request(app)
+        .patch("/api/comments/999")
+        .send(testPatch)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not found");
+        });
+    });
+    test("PATCH 400: invalid request body", () => {
+      const testPatch = { inc_votes: "invalid type" };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(testPatch)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("PATCH 400: request body of incorrect type", () => {
+      const testPatch = { invalid: 3 };
+      return request(app)
+        .patch("/api/comments/1")
+        .send(testPatch)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+  });
 });
 
 describe("/api/users", () => {
@@ -510,31 +572,31 @@ describe("/api/users", () => {
   });
 });
 
-describe("/api/users:username",()=>{
-    test("GET 200: Responds with the user object of the specified username",()=>{
-        return request(app)
-        .get("/api/users/butter_bridge")
-        .expect(200)
-        .then(({body})=>{
-            const {user} = body
-            expect(user).toMatchObject({
-                username: 'butter_bridge',
-                name: 'jonny',
-                avatar_url:
-                  'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
-              })
-        })
-    })
-    test("GET 404: Username not found",()=>{
-        return request(app)
-        .get("/api/users/invalid_username")
-        .expect(404)
-        .then(({body})=>{
-            const {msg} = body
-            expect(msg).toBe("Not found")
-        })
-    })
-})
+describe("/api/users:username", () => {
+  test("GET 200: Responds with the user object of the specified username", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+  test("GET 404: Username not found", () => {
+    return request(app)
+      .get("/api/users/invalid_username")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Not found");
+      });
+  });
+});
 
 describe("/*", () => {
   test("ALL 404: Responds with a path not found when an incorrect path is invalid", () => {
