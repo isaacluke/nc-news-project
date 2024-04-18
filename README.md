@@ -144,12 +144,13 @@ A full description of the endpoints, with examples, can be found at the [/api](h
 | --- | --- | --- |
 | GET | /api | Serves a json of all the available endpoints |
 | GET | /api/topics | Serves an array of all topics |
-| GET | /api/articles | Serves an array of all articles. Accepts a topic, sort_by and order query |
+| POST | /api/topics | Accepts a topic and serves the posted topic |
+| GET | /api/articles | Serves an array of all articles. Accepts a topic, sort_by and order query. Accepts limit and p query, which adds pagination |
 | POST | /api/articles | Accepts an article and serves the posted article |
 | GET | /api/users | Serves an array of all users |
 | GET | /api/users/:username | Serves the specified user |
 | GET | /api/articles/:article_id | Serves the specified article |
-| GET | /api/articles/:article_id/comments | Serves the comments of the specified article |
+| GET | /api/articles/:article_id/comments | Serves the comments of the specified article. Accepts limit and p query, which adds pagination |
 | POST | /api/articles/:article_id/comments | Accepts a comment and serves the posted comment |
 | PATCH | /api/articles/:article_id | Accepts a votes increment and serves the article with votes updated |
 | DELETE | /api/comments/:comment_id | Deletes the comment |

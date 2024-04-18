@@ -8,6 +8,7 @@ const {
   insertArticle,
   countArticlesAndPages,
 } = require("../models/articles.models");
+const { countCommentsAndPages } = require("../models/comments.models");
 const { checkTopicExists } = require("../models/topics.models");
 
 exports.getArticle = (req, res, next) => {
@@ -34,19 +35,24 @@ exports.getAllArticles = (req, res, next) => {
     .then(([articles, total_count]) => {
       res.status(200).send({ articles, total_count });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.getArticleComments = (req, res, next) => {
   const { article_id } = req.params;
+  const {limit , p} = req.query
+  const validQueries = ["limit", "p"]
+  const requestQueries = Object.keys(req.query)
+  if (!requestQueries.every((query)=> validQueries.includes(query))){
+    res.status(400).send({msg: "Bad request"})
+  }
   Promise.all([
-    selectArticleComments(article_id),
+    selectArticleComments(article_id, limit, p),
+    countCommentsAndPages(article_id, limit, p),
     checkArticleExists(article_id),
   ])
-    .then(([comments]) => {
-      res.status(200).send({ comments });
+    .then(([comments, total_count]) => {
+      res.status(200).send({ comments, total_count });
     })
     .catch(next);
 };

@@ -9,18 +9,54 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe("/api/topics", () => {
-  test("GET 200: Responds with all topics, each of which with the properties of slug and description", () => {
-    return request(app)
-      .get("/api/topics")
-      .expect(200)
-      .then(({ body }) => {
-        const { topics } = body;
-        expect(topics.length).toBe(3);
-        topics.forEach((topic) => {
-          expect(typeof topic.description).toBe("string");
-          expect(typeof topic.slug).toBe("string");
+  describe("GET", () => {
+    test("GET 200: Responds with all topics, each of which with the properties of slug and description", () => {
+      return request(app)
+        .get("/api/topics")
+        .expect(200)
+        .then(({ body }) => {
+          const { topics } = body;
+          expect(topics.length).toBe(3);
+          topics.forEach((topic) => {
+            expect(typeof topic.description).toBe("string");
+            expect(typeof topic.slug).toBe("string");
+          });
         });
-      });
+    });
+  });
+  describe("POST", () => {
+    test("POST 201: Accepts a body with a slug and description, and responds with the posted topic", () => {
+      const testTopic = {
+        slug: "test topic",
+        description: "This is a test topic",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(201)
+        .then(({ body }) => {
+          const { topic } = body;
+          const expectedTopic = {
+            slug: "test topic",
+            description: "This is a test topic",
+          };
+          expect(topic).toMatchObject(expectedTopic);
+        });
+    });
+    test("POST 400: request body invalid format",()=>{
+        const testTopic = {
+            invalid: "test topic",
+            description: "This is a test topic",
+          };
+          return request(app)
+            .post("/api/topics")
+            .send(testTopic)
+            .expect(400)
+            .then(({ body }) => {
+              const { msg } = body;
+              expect(msg).toBe("Bad request");
+            });
+    })
   });
 });
 
@@ -367,14 +403,14 @@ describe("/api/articles", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("GET 404: page not found if p received is too large",()=>{
-        return request(app)
+    test("GET 404: page not found if p received is too large", () => {
+      return request(app)
         .get("/api/articles?p=3")
         .expect(404)
         .then(({ body }) => {
           const { msg } = body;
           expect(msg).toBe("Not found");
-        }); 
+        });
     });
   });
 });
@@ -529,7 +565,7 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(200)
         .then(({ body }) => {
           const { comments } = body;
-          expect(comments.length).toBe(11);
+          expect(comments.length).toBeGreaterThan(0);
           comments.forEach((comment) => {
             expect(comment).toMatchObject({
               comment_id: expect.any(Number),
@@ -652,6 +688,105 @@ describe("/api/articles/:article_id/comments", () => {
       return request(app)
         .post("/api/articles/1/comments")
         .send(testComment)
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not found");
+        });
+    });
+  });
+  describe("GET pagination", () => {
+    test("GET 200: Responds with a total_count property that displays the total number of comments", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { total_count } = body;
+          expect(total_count).toBe(11);
+        });
+    });
+    test("GET 200: Endpoint accepts limit query, which limits the number of responses according to its value", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=7")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments.length).toBe(7);
+        });
+    });
+    test("GET 200: Limit query defaults to 10", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments.length).toBe(10);
+        });
+    });
+    test("GET 400: invalid query", () => {
+      return request(app)
+        .get("/api/articles/1/comments?invalid=7")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("GET 400: invalid limit type received", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=invalid_type")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("GET 400: negative number received for limit", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=-1")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("GET 200: Endpoint accepts page query, which specifies the page at which to start", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=3&&limit=5")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments[0]).toMatchObject({
+            comment_id: 9,
+            body: "Superficially charming",
+            article_id: 1,
+            author: "icellusedkars",
+            votes: 0,
+            created_at: "2020-01-01T03:08:00.000Z",
+          });
+        });
+    });
+    test("GET 400: Invalid page type received", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=invalid_type")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("GET 400: Integer less than or equal to 0 received for page", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=0")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("GET 404: page not found if p received is too large", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=3")
         .expect(404)
         .then(({ body }) => {
           const { msg } = body;

@@ -90,16 +90,18 @@ exports.selectAllArticles = (
   });
 };
 
-exports.selectArticleComments = (article_id) => {
+exports.selectArticleComments = (article_id, limit = 10, p = 1) => {
+  const pageOffset = Number(limit) * (Number(p) - 1)
   return db
     .query(
       `
     SELECT * 
     FROM comments
     WHERE article_id = $1
-    ORDER BY created_at DESC;
+    ORDER BY created_at DESC
+    OFFSET $2 ROWS FETCH NEXT $3 ROWS ONLY;
     `,
-      [article_id]
+      [article_id, pageOffset, limit]
     )
     .then(({ rows }) => {
       return rows;
@@ -195,7 +197,6 @@ exports.countArticlesAndPages = (topic, limit = 10, p = 1) => {
     if (pageOffset >= total_count && total_count !== 0){
       return Promise.reject({status: 404, msg: "Not found"})
     }
-
     return total_count
   });
 };

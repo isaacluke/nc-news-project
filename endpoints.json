@@ -9,9 +9,23 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "Accepts a topic object with a slug and description, and serves the posted topic.",
+    "queries": [],
+    "exampleRequest": {
+      "slug": "example topic",
+      "description": "This is an example topic"
+    },
+    "exampleResponse": {
+      "topic": {
+        "slug": "example topic",
+        "description": "This is an example topic"
+      }
+    }
+  },
   "GET /api/articles": {
-    "description": "serves an array of all articles. Accepts topic query, which serves an array of all articles with the specified topic. Accepts sort_by query, which serves an array of all articles sorted by specified column. Accepts order query, which serves an array of all articles ordered my specified asc or desc.",
-    "queries": ["topic", "sort_by", "order"],
+    "description": "serves an array of all articles. Accepts topic query, which serves an array of all articles with the specified topic. Accepts sort_by query, which serves an array of all articles sorted by specified column, defaults to created_at. Accepts order query, which serves an array of all articles ordered, defaults to desc. Accepts limit query, which limits the response to specified number of articles, defaults to 10. Also accepts page query 'p', which specifies the page at which to start, defaults to the first page.",
+    "queries": ["topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
       "articles": [
         {
@@ -24,7 +38,8 @@
           "article_img_url": "https: //images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           "comment_count": 0
         }
-      ]
+      ],
+      "total_count": 13
     }
   },
   "POST /api/articles": {
@@ -93,8 +108,8 @@
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves an array of all comments on a specified article",
-    "queries": [],
+    "description": "serves an array of all comments on a specified article. Accepts limit query, which limits the response to specified number of comments, and defaults to 10. Also accepts page query 'p', which specifies the page at which to start, defaults to the first page.",
+    "queries": ["limit", "p"],
     "exampleResponse": {
       "comments": [
         {
@@ -105,7 +120,8 @@
           "votes": 100,
           "created_at": "2020-03-01T01:13:00.000Z"
         }
-      ]
+      ],
+      "total_count": 2
     }
   },
   "POST /api/articles/:article_id/comments": {
