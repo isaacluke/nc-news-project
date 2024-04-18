@@ -111,23 +111,38 @@
       "inc_votes": 20
     },
     "exampleResponse": {
-      "article": [
-        {
-          "article_id": 1,
-          "title": "Living in the shadow of a great man",
-          "topic": "mitch",
-          "author": "butter_bridge",
-          "body": "I find this existence challenging",
-          "created_at": "2020-07-09T20:11:00.000Z",
-          "votes": 120,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-        }
-      ]
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": "2020-07-09T20:11:00.000Z",
+        "votes": 120,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
     }
   },
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes the comment by comment_id and serves a status of 204 with no content",
     "queries": [],
     "exampleResponse": {}
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Accepts a votes increment object, and serves the comment with the updated votes.",
+    "queries": [],
+    "exampleRequest": {
+      "inc_votes": 3
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "article_id": 9,
+        "author": "butter_bridge",
+        "votes": 19,
+        "created_at": "2020-04-06T12:17:00.000Z"
+      }
+    }
   }
 }

@@ -152,5 +152,6 @@ A full description of the endpoints, with examples, can be found at the [/api](h
 | POST | /api/articles/:article_id/comments | Accepts a comment and serves the posted comment |
 | PATCH | /api/articles/:article_id | Accepts a votes increment and serves the article with votes updated |
 | DELETE | /api/comments/:comment_id | Deletes the comment |
+| PATCH | /api/comments/:comment_id | Accepts a votes increment and serves the comment with votes updated |
 
     
