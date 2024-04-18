@@ -145,6 +145,7 @@ A full description of the endpoints, with examples, can be found at the [/api](h
 | GET | /api | Serves a json of all the available endpoints |
 | GET | /api/topics | Serves an array of all topics |
 | GET | /api/articles | Serves an array of all articles. Accepts a topic, sort_by and order query |
+| POST | /api/articles | Accepts an article and serves the posted article |
 | GET | /api/users | Serves an array of all users |
 | GET | /api/users/:username | Serves the specified user |
 | GET | /api/articles/:article_id | Serves the specified article |

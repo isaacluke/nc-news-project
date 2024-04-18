@@ -5,6 +5,8 @@ const {
   insertArticleComment,
   updateArticleVotes,
   checkArticleExists,
+  insertArticle,
+  countArticlesAndPages,
 } = require("../models/articles.models");
 const { checkTopicExists } = require("../models/topics.models");
 
@@ -14,21 +16,23 @@ exports.getArticle = (req, res, next) => {
     .then((article) => {
       res.status(200).send({ article });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { topic , sort_by , order } = req.query;
-  const validQueries = ["topic", "sort_by", "order"];
+  const { topic, sort_by, order, limit, p } = req.query;
+  const validQueries = ["topic", "sort_by", "order", "limit", "p"];
   const requestQueries = Object.keys(req.query);
   if (!requestQueries.every((query) => validQueries.includes(query))) {
     res.status(400).send({ msg: "Bad request" });
   }
-  Promise.all([selectAllArticles(topic, sort_by, order), checkTopicExists(topic)])
-    .then(([articles]) => {
-      res.status(200).send({ articles });
+  Promise.all([
+    selectAllArticles(topic, sort_by, order, limit, p),
+    countArticlesAndPages(topic, limit, p),
+    checkTopicExists(topic),
+  ])
+    .then(([articles, total_count]) => {
+      res.status(200).send({ articles, total_count });
     })
     .catch((err) => {
       next(err);
@@ -44,9 +48,7 @@ exports.getArticleComments = (req, res, next) => {
     .then(([comments]) => {
       res.status(200).send({ comments });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.postArticleComment = (req, res, next) => {
@@ -56,9 +58,7 @@ exports.postArticleComment = (req, res, next) => {
     .then((comment) => {
       res.status(201).send({ comment });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.patchArticleVotes = (req, res, next) => {
@@ -71,4 +71,13 @@ exports.patchArticleVotes = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+
+exports.postArticle = (req, res, next) => {
+  const article = req.body;
+  insertArticle(article)
+    .then((article) => {
+      res.status(201).send({ article });
+    })
+    .catch(next);
 };

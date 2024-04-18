@@ -30,7 +30,13 @@ exports.selectArticle = (article_id) => {
     });
 };
 
-exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
+exports.selectAllArticles = (
+  topic,
+  sort_by = "created_at",
+  order = "desc",
+  limit = 10,
+  p = 1
+) => {
   const validSortBy = [
     "article_id",
     "title",
@@ -41,10 +47,10 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
     "article_img_url",
     "comment_count",
   ];
-  const validOrders = ["asc", "desc"]
+  const validOrders = ["asc", "desc"];
 
-  if(!validSortBy.includes(sort_by) || !validOrders.includes(order)){
-    return Promise.reject({status:400, msg: "Bad request"})
+  if (!validSortBy.includes(sort_by) || !validOrders.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
   }
 
   let sqlQueryString = `
@@ -63,6 +69,8 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
         `;
   const sqlQueryArray = [];
 
+  const pageOffset = Number(limit) * (Number(p) - 1);
+
   if (topic) {
     sqlQueryArray.push(topic);
     sqlQueryString += `WHERE topic = $1 `;
@@ -70,7 +78,12 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
 
   sqlQueryString += `
         GROUP BY articles.article_id
-        ORDER BY ${sort_by} ${order} ;`;
+        ORDER BY ${sort_by} ${order} 
+        OFFSET $${sqlQueryArray.length + 1} ROWS FETCH NEXT $${
+    sqlQueryArray.length + 2
+  } ROWS ONLY;`;
+
+  sqlQueryArray.push(pageOffset, limit);
 
   return db.query(sqlQueryString, sqlQueryArray).then(({ rows }) => {
     return rows;
@@ -144,4 +157,45 @@ exports.checkArticleExists = (article_id) => {
         return Promise.reject({ status: 404, msg: "Not found" });
       }
     });
+};
+
+exports.insertArticle = ({ title, topic, author, body, article_img_url }) => {
+  let sqlQueryString = `INSERT INTO articles `;
+  const sqlQueryArray = [title, topic, author, body];
+
+  if (article_img_url) {
+    sqlQueryString += `
+        (title, topic, author, body, article_img_url) 
+      VALUES 
+        ($1, $2, $3, $4, $5) `;
+    sqlQueryArray.push(article_img_url);
+  } else {
+    sqlQueryString += `
+        (title, topic, author, body) 
+      VALUES 
+        ($1, $2, $3, $4) `;
+  }
+  sqlQueryString += `RETURNING *, 0 AS comment_count;`;
+  return db.query(sqlQueryString, sqlQueryArray).then(({ rows }) => {
+    return rows[0];
+  });
+};
+
+exports.countArticlesAndPages = (topic, limit = 10, p = 1) => {
+  let sqlQueryString = `SELECT article_id FROM articles `;
+  const sqlQueryArray = [];
+  if (topic) {
+    sqlQueryString += `WHERE topic = $1;`;
+    sqlQueryArray.push(topic);
+  }
+  return db.query(sqlQueryString, sqlQueryArray)
+  .then(({ rows }) => {
+    const total_count = rows.length
+    const pageOffset = Number(limit) * (Number(p) - 1);
+    if (pageOffset >= total_count && total_count !== 0){
+      return Promise.reject({status: 404, msg: "Not found"})
+    }
+
+    return total_count
+  });
 };
