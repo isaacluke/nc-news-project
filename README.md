@@ -153,6 +153,7 @@ A full description of the endpoints, with examples, can be found at the [/api](h
 | GET | /api/articles/:article_id/comments | Serves the comments of the specified article. Accepts limit and p query, which adds pagination |
 | POST | /api/articles/:article_id/comments | Accepts a comment and serves the posted comment |
 | PATCH | /api/articles/:article_id | Accepts a votes increment and serves the article with votes updated |
+| DELETE | /api/articles/:article_id | Deletes the article and its respective comments |
 | DELETE | /api/comments/:comment_id | Deletes the comment |
 | PATCH | /api/comments/:comment_id | Accepts a votes increment and serves the comment with votes updated |
 

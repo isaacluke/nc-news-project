@@ -200,3 +200,16 @@ exports.countArticlesAndPages = (topic, limit = 10, p = 1) => {
     return total_count
   });
 };
+
+exports.removeArticle = (article_id) =>{
+  return db.query(`
+  DELETE FROM articles
+  WHERE article_id = $1
+  RETURNING *;
+  `, [article_id])
+  .then(({rows})=>{
+    if (rows.length === 0){
+      return Promise.reject({status:404, msg: "Not found"})
+    }
+  })
+}

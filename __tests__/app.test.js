@@ -18,8 +18,10 @@ describe("/api/topics", () => {
           const { topics } = body;
           expect(topics.length).toBe(3);
           topics.forEach((topic) => {
-            expect(typeof topic.description).toBe("string");
-            expect(typeof topic.slug).toBe("string");
+            expect(topic).toMatchObject({
+                slug: expect.any(String),
+                description: expect.any(String)
+            })
           });
         });
     });
@@ -43,20 +45,20 @@ describe("/api/topics", () => {
           expect(topic).toMatchObject(expectedTopic);
         });
     });
-    test("POST 400: request body invalid format",()=>{
-        const testTopic = {
-            invalid: "test topic",
-            description: "This is a test topic",
-          };
-          return request(app)
-            .post("/api/topics")
-            .send(testTopic)
-            .expect(400)
-            .then(({ body }) => {
-              const { msg } = body;
-              expect(msg).toBe("Bad request");
-            });
-    })
+    test("POST 400: Request body invalid format", () => {
+      const testTopic = {
+        invalid: "test topic",
+        description: "This is a test topic",
+      };
+      return request(app)
+        .post("/api/topics")
+        .send(testTopic)
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
   });
 });
 
@@ -137,7 +139,7 @@ describe("/api/articles", () => {
           expect(articles).toHaveLength(0);
         });
     });
-    test("GET 404: topic not found", () => {
+    test("GET 404: Topic not found", () => {
       return request(app)
         .get("/api/articles?topic=invalid")
         .expect(404)
@@ -146,7 +148,7 @@ describe("/api/articles", () => {
           expect(msg).toBe("Not found");
         });
     });
-    test("GET 400: invalid query", () => {
+    test("GET 400: Invalid query", () => {
       return request(app)
         .get("/api/articles?invalid=mitch")
         .expect(400)
@@ -164,7 +166,7 @@ describe("/api/articles", () => {
           expect(articles).toBeSortedBy("comment_count", { descending: true });
         });
     });
-    test("GET 400: invalid sort_by column", () => {
+    test("GET 400: Invalid sort_by column", () => {
       return request(app)
         .get("/api/articles?sort_by=invalid")
         .expect(400)
@@ -182,7 +184,7 @@ describe("/api/articles", () => {
           expect(articles).toBeSortedBy("title");
         });
     });
-    test("GET 200: order defaults to descending", () => {
+    test("GET 200: Order defaults to descending", () => {
       return request(app)
         .get("/api/articles?sort_by=title")
         .expect(200)
@@ -191,7 +193,7 @@ describe("/api/articles", () => {
           expect(articles).toBeSortedBy("title", { descending: true });
         });
     });
-    test("GET 400: invalid order request", () => {
+    test("GET 400: Invalid order request", () => {
       return request(app)
         .get("/api/articles?order=invalid")
         .expect(400)
@@ -292,7 +294,7 @@ describe("/api/articles", () => {
           expect(msg).toBe("Not found");
         });
     });
-    test("POST 400: request body of invalid format", () => {
+    test("POST 400: Request body of invalid format", () => {
       const testArticle = {
         invalid: "Test Article",
         topic: "mitch",
@@ -364,7 +366,7 @@ describe("/api/articles", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("GET 400: negative integer received", () => {
+    test("GET 400: Negative integer received", () => {
       return request(app)
         .get("/api/articles?limit=-1")
         .expect(400)
@@ -403,7 +405,7 @@ describe("/api/articles", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("GET 404: page not found if p received is too large", () => {
+    test("GET 404: Page not found if p received is too large", () => {
       return request(app)
         .get("/api/articles?p=3")
         .expect(404)
@@ -532,7 +534,7 @@ describe("/api/articles/:article_id", () => {
           expect(msg).toBe("Not found");
         });
     });
-    test("PATCH 400: invalid request body", () => {
+    test("PATCH 400: Invalid request body", () => {
       const testPatch = { inc_votes: "invalid type" };
       return request(app)
         .patch("/api/articles/1")
@@ -543,7 +545,7 @@ describe("/api/articles/:article_id", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("PATCH 400: request body of incorrect type", () => {
+    test("PATCH 400: Request body of incorrect type", () => {
       const testPatch = { invalid: 20 };
       return request(app)
         .patch("/api/articles/1")
@@ -552,6 +554,29 @@ describe("/api/articles/:article_id", () => {
         .then(({ body }) => {
           const { msg } = body;
           expect(msg).toBe("Bad request");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    test("DELETE 204: Deletes specified article and its respective comments", () => {
+      return request(app).delete("/api/articles/1").expect(204);
+    });
+    test("DELETE 400: Invalid article_id type", () => {
+      return request(app)
+        .delete("/api/articles/invalid-type")
+        .expect(400)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Bad request");
+        });
+    });
+    test("DELETE 404: article_id not found", () => {
+      return request(app)
+        .delete("/api/articles/9999")
+        .expect(404)
+        .then(({ body }) => {
+          const { msg } = body;
+          expect(msg).toBe("Not found");
         });
     });
   });
@@ -652,7 +677,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("POST 404: article not found", () => {
+    test("POST 404: Article not found", () => {
       const testComment = {
         username: "butter_bridge",
         body: "This is a test comment",
@@ -680,7 +705,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("POST 404: username not found", () => {
+    test("POST 404: Username not found", () => {
       const testComment = {
         username: "invalid",
         body: "This is a test comment",
@@ -723,7 +748,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comments.length).toBe(10);
         });
     });
-    test("GET 400: invalid query", () => {
+    test("GET 400: Invalid query", () => {
       return request(app)
         .get("/api/articles/1/comments?invalid=7")
         .expect(400)
@@ -732,7 +757,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("GET 400: invalid limit type received", () => {
+    test("GET 400: Invalid limit type received", () => {
       return request(app)
         .get("/api/articles/1/comments?limit=invalid_type")
         .expect(400)
@@ -741,7 +766,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("GET 400: negative number received for limit", () => {
+    test("GET 400: Negative number received for limit", () => {
       return request(app)
         .get("/api/articles/1/comments?limit=-1")
         .expect(400)
@@ -784,7 +809,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("GET 404: page not found if p received is too large", () => {
+    test("GET 404: Page not found if p received is too large", () => {
       return request(app)
         .get("/api/articles/1/comments?p=3")
         .expect(404)
@@ -879,7 +904,7 @@ describe("/api/comments/:comment_id", () => {
           expect(msg).toBe("Not found");
         });
     });
-    test("PATCH 400: invalid request body", () => {
+    test("PATCH 400: Invalid request body", () => {
       const testPatch = { inc_votes: "invalid type" };
       return request(app)
         .patch("/api/comments/1")
@@ -890,7 +915,7 @@ describe("/api/comments/:comment_id", () => {
           expect(msg).toBe("Bad request");
         });
     });
-    test("PATCH 400: request body of incorrect type", () => {
+    test("PATCH 400: Request body of incorrect type", () => {
       const testPatch = { invalid: 3 };
       return request(app)
         .patch("/api/comments/1")

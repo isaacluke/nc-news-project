@@ -7,6 +7,7 @@ const {
   checkArticleExists,
   insertArticle,
   countArticlesAndPages,
+  removeArticle,
 } = require("../models/articles.models");
 const { countCommentsAndPages } = require("../models/comments.models");
 const { checkTopicExists } = require("../models/topics.models");
@@ -74,9 +75,7 @@ exports.patchArticleVotes = (req, res, next) => {
     .then((article) => {
       res.status(200).send({ article });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.postArticle = (req, res, next) => {
@@ -87,3 +86,12 @@ exports.postArticle = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.deleteArticle = (req,res,next) => {
+  const {article_id} = req.params
+  removeArticle(article_id)
+  .then(()=>{
+    res.sendStatus(204)
+  }) 
+  .catch(next)
+}

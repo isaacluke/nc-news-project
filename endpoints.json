@@ -161,6 +161,11 @@
       }
     }
   },
+  "DELETE /api/articles/:article_id": {
+    "description": "Deletes the article by article_id and serves a status of 204 with no content. Also deletes all of its respective comments",
+    "queries": [],
+    "exampleResponse": {}
+  },
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes the comment by comment_id and serves a status of 204 with no content",
     "queries": [],
