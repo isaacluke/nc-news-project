@@ -33,8 +33,8 @@ exports.getAllArticles = (req, res, next) => {
     countArticlesAndPages(topic, limit, p),
     checkTopicExists(topic),
   ])
-    .then(([articles, total_count]) => {
-      res.status(200).send({ articles, total_count });
+    .then(([articles, [total_count, page_count]]) => {
+      res.status(200).send({ articles, total_count, page_count });
     })
     .catch(next);
 };
