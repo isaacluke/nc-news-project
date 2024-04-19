@@ -414,6 +414,15 @@ describe("/api/articles", () => {
           expect(msg).toBe("Not found");
         });
     });
+    test("GET 200: Responds with a page_count property that displays the total number of pages and the current page", () => {
+      return request(app)
+        .get("/api/articles?limit=4&&p=2")
+        .expect(200)
+        .then(({ body }) => {
+          const { page_count } = body;
+          expect(page_count).toMatchObject({current_page: 2, total_pages: 4});
+        });
+    });
   });
 });
 

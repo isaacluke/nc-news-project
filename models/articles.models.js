@@ -197,7 +197,8 @@ exports.countArticlesAndPages = (topic, limit = 10, p = 1) => {
     if (pageOffset >= total_count && total_count !== 0){
       return Promise.reject({status: 404, msg: "Not found"})
     }
-    return total_count
+    const page_count = {current_page: Number(p), total_pages: Math.ceil(total_count / Number(limit))}
+    return [total_count, page_count]
   });
 };
 
