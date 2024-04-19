@@ -24,7 +24,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles. Accepts topic query, which serves an array of all articles with the specified topic. Accepts sort_by query, which serves an array of all articles sorted by specified column, defaults to created_at. Accepts order query, which serves an array of all articles ordered, defaults to desc. Accepts limit query, which limits the response to specified number of articles, defaults to 10. Also accepts page query 'p', which specifies the page at which to start, defaults to the first page.",
+    "description": "serves an array of all articles, total_count and page_count describing how many articles there are and what page you are on. Accepts topic query, which serves an array of all articles with the specified topic. Accepts sort_by query, which serves an array of all articles sorted by specified column, defaults to created_at. Accepts order query, which serves an array of all articles ordered, defaults to desc. Accepts limit query, which limits the response to specified number of articles, defaults to 10. Also accepts page query 'p', which specifies the page at which to start, defaults to the first page.",
     "queries": ["topic", "sort_by", "order", "limit", "p"],
     "exampleResponse": {
       "articles": [
@@ -39,7 +39,11 @@
           "comment_count": 0
         }
       ],
-      "total_count": 13
+      "total_count": 13,
+      "page_count": {
+        "current_page": 1,
+        "total_pages": 2
+      }
     }
   },
   "POST /api/articles": {
