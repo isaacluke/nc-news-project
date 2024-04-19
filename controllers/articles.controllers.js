@@ -34,7 +34,6 @@ exports.getAllArticles = (req, res, next) => {
     checkTopicExists(topic),
   ])
     .then(([articles, [total_count, page_count]]) => {
-      console.log(page_count)
       res.status(200).send({ articles, total_count, page_count });
     })
     .catch(next);
